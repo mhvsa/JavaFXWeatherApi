@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {"nazwa_waluty", "przelicznik", "kod_waluty", "kurs_sredni"})
 public class Pozycja {
-
+    
     private String nazwa_waluty;
     private String przelicznik;
     private String kod_waluty;

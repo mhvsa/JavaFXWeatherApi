@@ -140,4 +140,5 @@ public class OpenWeatherPOJO {
         this.cod = cod;
     }
 
+
 }

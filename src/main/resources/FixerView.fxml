@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="207.0" prefWidth="318.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.161" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="fixerLabel" alignment="CENTER" layoutX="17.0" layoutY="116.0" prefHeight="16.0" prefWidth="275.0" styleClass="nbp" text="1 EUR = 1 EUR" />
+      <JFXComboBox fx:id="currencyPicker" layoutX="6.0" layoutY="43.0" onAction="#fixerChanged" promptText="Euro" />
+      <JFXButton layoutX="263.0" layoutY="82.0" text="Ok" />
+   </children>
+</AnchorPane>

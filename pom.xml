@@ -47,8 +47,7 @@
             <artifactId>nv-i18n</artifactId>
             <version>1.22</version>
         </dependency>
-
-
+        
     </dependencies>
 
 

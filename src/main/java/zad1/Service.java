@@ -43,25 +43,20 @@ public class Service {
 
     private static final String OPENWEATHER_HOST = "api.openweathermap.org";
     private static final String OPENWEATHER_PATH = "/data/2.5/weather";
-    private static final String OPENWEATHER_AUTH_TOKEN = "cc9951e58e20b6567f9821d43026823f"; // TODO make a configuration file
+    private static final String OPENWEATHER_AUTH_TOKEN = Configuration.OPENWEATHER_AUTH_TOKEN;
 
     private static final String FIXER_HOST = "data.fixer.io";
     private static final String FIXER_PATH_LATEST = "/api/latest";
-    private static final String FIXER_AUTH_TOKEN = "930874f33f3b06d0cf62ee5cfb22e09c";
+    private static final String FIXER_AUTH_TOKEN = Configuration.FIXER_AUTH_TOKEN;
 
     private static final String NBP_HOST = "www.nbp.pl";
-    private static final String NBP_TABLE_A_XML_PATH = "/kursy/xml/a064z180330.xml";
-    private static final String NBP_TABLE_B_XML_PATH = "/kursy/xml/b013z180328.xml";
-
 
     private static final List<String> CURRENCIES = Arrays.asList("USD", "EUR");
 
     private final String country;
     private final URIBuilder openWeatherUriBuilder;
     private final URIBuilder fixerUriBuilder;
-    private final URIBuilder nbpAUriBuilder;
-    private final URIBuilder nbpBUriBuilder;
-
+    private final URIBuilder nbpUriBuilder;
 
     public Service(String country) {
         this.country = country;
@@ -73,23 +68,22 @@ public class Service {
                 .setScheme(PROTOCOL)
                 .setHost(FIXER_HOST)
                 .setPath(FIXER_PATH_LATEST);
-        this.nbpAUriBuilder = new URIBuilder()
+        this.nbpUriBuilder = new URIBuilder()
                 .setScheme(PROTOCOL)
-                .setHost(NBP_HOST)
-                .setPath(NBP_TABLE_A_XML_PATH);
-        this.nbpBUriBuilder = new URIBuilder()
-                .setScheme(PROTOCOL)
-                .setHost(NBP_HOST)
-                .setPath(NBP_TABLE_B_XML_PATH);
+                .setHost(NBP_HOST);
     }
 
     public String getWeather(String city) {
 
         URI uri = null;
 
+        String cc = CountryCode.findByName(country).get(0).getAlpha2();
+
         try {
             uri = this.openWeatherUriBuilder
-                    .addParameter("q", String.format("%s,%s", this.country, city))
+                    .addParameter("q", String.format("%s,%s", city, this.country))
+//                    .addParameter("q", String.format("%s,%s", city, cc))
+                    .addParameter("units", "metric")
                     .addParameter("APPID", OPENWEATHER_AUTH_TOKEN)
                     .build();
         } catch (URISyntaxException e) {
@@ -99,7 +93,27 @@ public class Service {
         String json = getRequest(uri); // TODO nullPointerException handling
 
         return json;
+    }
 
+    public String getWeatherByCode(Integer cityCode) {
+
+        URI uri = null;
+
+        String cc = CountryCode.findByName(country).get(0).getAlpha2();
+
+        try {
+            uri = this.openWeatherUriBuilder
+                    .addParameter("id", cityCode.toString())
+                    .addParameter("units", "metric")
+                    .addParameter("APPID", OPENWEATHER_AUTH_TOKEN)
+                    .build();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        String json = getRequest(uri); // TODO nullPointerException handling
+
+        return json;
     }
 
     public Double getRateFor(String currency) {
@@ -125,8 +139,13 @@ public class Service {
         }
 
         try {
-            String tableA = getRequest(nbpAUriBuilder.build());
-            String tableB = getRequest(nbpBUriBuilder.build());
+
+            String a = getRequest(nbpUriBuilder.setPath("/kursy/kursya.html").build()).split("<p class=\"file print_hidden\"><a href=\"")[1].split("\"")[0];
+            String b = getRequest(nbpUriBuilder.setPath("/kursy/kursyb.html").build()).split("<p class=\"file print_hidden\"><a href=\"")[1].split("\"")[0];
+
+            String tableA = getRequest(nbpUriBuilder.setPath(a).build());
+            String tableB = getRequest(nbpUriBuilder.setPath(b).build());
+
 
             JAXBContext jc = JAXBContext.newInstance(PozycjeLista.class);
 
@@ -141,7 +160,7 @@ public class Service {
                     .findFirst();
 
             if (waluta.isPresent()) {
-                return Double.valueOf(waluta.get().getPrzelicznik());
+                return Double.valueOf(waluta.get().getPrzelicznik()) * Double.valueOf(waluta.get().getKurs_sredni().replace(",", "."));
             }
 
             PozycjeLista pozycjeListaB = (PozycjeLista) unmarshaller.unmarshal(new InputSource(new StringReader(tableB)));
@@ -151,7 +170,7 @@ public class Service {
                     .findFirst();
 
             if (waluta.isPresent()) {
-                return Double.valueOf(waluta.get().getPrzelicznik());
+                return Double.valueOf(waluta.get().getPrzelicznik()) * Double.valueOf(waluta.get().getKurs_sredni().replace(",", "."));
             }
 
             return null;

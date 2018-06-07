@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="207.0" prefWidth="318.0" styleClass="nbp" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.161" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="nbpLabel" alignment="CENTER" layoutX="17.0" layoutY="116.0" prefHeight="16.0" prefWidth="275.0" text="1 EUR = 4.17 PLN" />
+   </children>
+</AnchorPane>

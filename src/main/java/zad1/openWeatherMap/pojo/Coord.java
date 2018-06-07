@@ -29,4 +29,19 @@ public class Coord {
         this.lat = lat;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof Coord) {
+            Coord coord = (Coord) obj;
+            if (coord.getLat().equals(lat) && coord.getLon().equals(lon)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 }
